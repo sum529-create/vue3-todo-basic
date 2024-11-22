@@ -1,26 +1,51 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <TodoHeader/>
+  <TodoInput @addList="addLists"/>
+  <TodoList :todoList="todoItems" @remove="removeTodoItem"/>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import { onMounted, ref } from 'vue';
+import TodoHeader from './components/TodoHeader.vue';
+import TodoInput from './components/TodoInput.vue';
+import TodoList from './components/TodoList.vue';
 
 export default {
-  name: 'App',
   components: {
-    HelloWorld
+    TodoHeader,
+    TodoInput,
+    TodoList
+  },
+  setup () {
+    const todoItems = ref([])
+    function fetchList(){
+      const result = [];
+      for(let i =0; i<localStorage.length; i++){
+        const todoItem = localStorage.key(i);
+        result.push(todoItem);
+      }
+      todoItems.value = result
+    }
+    function addLists(todo){
+      localStorage.setItem(todo, todo) // key, value
+      todoItems.value.push(todo);
+    }
+
+    function removeTodoItem(item, index){
+      
+      todoItems.value.splice(index, 1);
+      localStorage.removeItem(item);
+    }
+
+    onMounted(() => {
+      fetchList();
+    })
+
+    return {addLists, todoItems, fetchList, removeTodoItem}
   }
 }
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style lang="scss" scoped>
+
 </style>
