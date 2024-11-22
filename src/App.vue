@@ -5,10 +5,10 @@
 </template>
 
 <script>
-import { onMounted, ref } from 'vue';
 import TodoHeader from './components/TodoHeader.vue';
 import TodoInput from './components/TodoInput.vue';
 import TodoList from './components/TodoList.vue';
+import useTodo from './composable/useTodo';
 
 export default {
   components: {
@@ -17,31 +17,9 @@ export default {
     TodoList
   },
   setup () {
-    const todoItems = ref([])
-    function fetchList(){
-      const result = [];
-      for(let i =0; i<localStorage.length; i++){
-        const todoItem = localStorage.key(i);
-        result.push(todoItem);
-      }
-      todoItems.value = result
-    }
-    function addLists(todo){
-      localStorage.setItem(todo, todo) // key, value
-      todoItems.value.push(todo);
-    }
+    const {todoItems, addLists, removeTodoItem} = useTodo();
 
-    function removeTodoItem(item, index){
-      
-      todoItems.value.splice(index, 1);
-      localStorage.removeItem(item);
-    }
-
-    onMounted(() => {
-      fetchList();
-    })
-
-    return {addLists, todoItems, fetchList, removeTodoItem}
+    return{todoItems, addLists, removeTodoItem}
   }
 }
 </script>
